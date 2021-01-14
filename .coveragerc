@@ -1,0 +1,4 @@
+[run]
+omit =
+    */.pyenv/*
+    # We do not care about pyenv site packages
