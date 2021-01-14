@@ -4,8 +4,6 @@ I'll be honest. I don't know what I'm doing here. I've never done mocking
 before. I don't know how to write efficient tests. But, here we are.
 """
 
-from unittest import mock
-import unittest
 from borgar import borg_iface as BI
 
 from unittest.mock import patch, MagicMock
@@ -20,13 +18,13 @@ def test_exists(mock_run: MagicMock):
     mock_run.assert_called()
 
     # Test a failing run
-    mock_run.reset_mock(
-        return_value=subprocess.CompletedProcess(args=[], returncode=127)
-    )
+    mock_run.reset_mock()
+    mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=127)
     assert not BI.exists()
     mock_run.assert_called()
 
     # Test with exception
-    mock_run.reset_mock(side_effect=FileNotFoundError("Je suis mock"))
+    mock_run.reset_mock()
+    mock_run.side_effect = FileNotFoundError("Je suis mock")
     assert not BI.exists()
     mock_run.assert_called()
