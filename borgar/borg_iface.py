@@ -6,6 +6,8 @@ invoking) borg. We hide all that here for modularity and ease of use.
 
 from collections import namedtuple
 from enum import Enum, auto
+from os import name, path as op
+from typing import Optional
 import subprocess
 
 
@@ -64,3 +66,18 @@ def exists() -> bool:
         return cp.returncode == 0
     except FileNotFoundError:
         return False
+
+
+def init(name: str, root_path: str, encryption: EncTuple) -> bool:
+    """Inits (creates) a borg repo
+
+    Args:
+        name (str): name of the new repo
+        root_path (str): path the repo will be created in
+        encryption (EncTuple): Encryption tuple defining how the repo will be encrypted
+
+    Returns:
+        bool: True if the repo was successfully created. False otherwise.
+    """
+
+    return False
