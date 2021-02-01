@@ -15,7 +15,9 @@ def test_exists(mock_run: MagicMock):
     # Test a good run
     mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
     assert BI.exists()
-    mock_run.assert_called()
+    mock_run.assert_called_with(
+        ["borg", "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
 
     # Test a failing run
     mock_run.reset_mock()
