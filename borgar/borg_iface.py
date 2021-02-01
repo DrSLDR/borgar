@@ -4,7 +4,51 @@ The borgar-internal interface for communicating with (that is, mostly
 invoking) borg. We hide all that here for modularity and ease of use.
 """
 
+from collections import namedtuple
+from enum import Enum, auto
 import subprocess
+
+
+class EncryptionType(Enum):
+    """Enumeration of encryption types accepted by Borg"""
+
+    NONE = auto()
+    """No encryption. No opt (None) needed."""
+    AUTHENTICATED = auto()
+    """SHA-265 Authenticated. Uses HMAC but no encryption. No opt (None) needed.
+    """
+    AUTHENTICATED_B2 = auto()
+    """BLAKE2b-256 Authenticated. Uses HMAC but no encryption. No opt (None)
+    needed."""
+    REPOKEY = auto()
+    """SHA-256 Authenticated and AES-CTR-256 Encrypted. A passphrase (str) is
+    needed as opt."""
+    KEYFILE = auto()
+    """SHA-256 Authenticated and AES-CTR-256 Encrypted. A keyfile path (str) is
+    optional as opt."""
+    REPOKEY_B2 = auto()
+    """BLAKE2b-256 Authenticated and AES-CTR-256 Encrypted. A passphrase (str)
+    is needed as opt."""
+    KEYFILE_B2 = auto()
+    """BLAKE2b-256 Authenticated and AES-CTR-256 Encrypted. A keyfile path (str)
+    is optional as opt."""
+
+
+_EncTuple_ = namedtuple("EncryptionTuple", ["enc", "opt"])
+
+
+class EncTuple(_EncTuple_):
+    """Encryption tuple type.
+
+    Used when invoking init() to encapsulate what type of encryption and what
+    argument to give it.
+
+    Args:
+        enc (EncryptionType): An encryption type to use. None is not permitted -
+          use the enum.
+        opt (Optional[str]): An argument to pass to the encryption scheme, such
+          as password or path to key file. See EncryptionType docs for info.
+    """
 
 
 def exists() -> bool:
