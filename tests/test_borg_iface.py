@@ -8,6 +8,7 @@ from borgar import borg_iface as BI
 
 from unittest.mock import patch, MagicMock
 import itertools
+import pytest
 import subprocess
 
 
@@ -33,9 +34,8 @@ def test_exists(mock_run: MagicMock):
     mock_run.assert_called()
 
 
-@patch("subprocess.run")
-def test_init(mock_run: MagicMock):
-    # Scaffold some constants we're gonna need
+@pytest.fixture()
+def init_etypes_opts_args():
     etypes = [
         BI.EncryptionType.NONE,
         BI.EncryptionType.AUTHENTICATED,
@@ -57,6 +57,14 @@ def test_init(mock_run: MagicMock):
         BI.EncryptionType.REPOKEY_B2: ["--encryption", "repokey-blake2"],
         BI.EncryptionType.KEYFILE_B2: ["--encryption", "keyfile-blake2"],
     }
+
+    return (etypes, eopts, enc_arg_map)
+
+
+@patch("subprocess.run")
+def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
+    # Scaffold some constants we're gonna need
+    etypes, eopts, enc_arg_map = init_etypes_opts_args
 
     # Test all the good runs
     for etype, eopt in zip(etypes, eopts):
