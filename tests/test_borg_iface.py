@@ -7,6 +7,7 @@ before. I don't know how to write efficient tests. But, here we are.
 from borgar import borg_iface as BI
 
 from unittest.mock import patch, MagicMock
+import itertools
 import subprocess
 
 
@@ -34,15 +35,43 @@ def test_exists(mock_run: MagicMock):
 
 @patch("subprocess.run")
 def test_init(mock_run: MagicMock):
-    # Test a good run
-    mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-    assert BI.init(
-        name="foo",
-        root_path="/tmp",
-        encryption=BI.EncTuple(BI.EncryptionType.NONE, None),
-    )
-    mock_run.assert_called_with(
-        ["borg", "init", "--encryption", "none", "/tmp/foo"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+    # Scaffold some constants we're gonna need
+    etypes = [
+        BI.EncryptionType.NONE,
+        BI.EncryptionType.AUTHENTICATED,
+        BI.EncryptionType.AUTHENTICATED_B2,
+        BI.EncryptionType.REPOKEY,
+        BI.EncryptionType.KEYFILE,
+        BI.EncryptionType.REPOKEY_B2,
+        BI.EncryptionType.KEYFILE_B2,
+    ]
+
+    eopts = [None, None, None, "bar", "/tmp/baz", "bar", "/tmp/baz"]
+
+    enc_arg_map = {
+        BI.EncryptionType.NONE: ["--encryption", "none"],
+        BI.EncryptionType.AUTHENTICATED: ["--encryption", "authenticated"],
+        BI.EncryptionType.AUTHENTICATED_B2: ["--encryption", "authenticated-blake2"],
+        BI.EncryptionType.REPOKEY: ["--encryption", "repokey"],
+        BI.EncryptionType.KEYFILE: ["--encryption", "keyfile"],
+        BI.EncryptionType.REPOKEY_B2: ["--encryption", "repokey-blake2"],
+        BI.EncryptionType.KEYFILE_B2: ["--encryption", "keyfile-blake2"],
+    }
+
+    # Test all the good runs
+    for etype, eopt in zip(etypes, eopts):
+        mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
+        assert BI.init(
+            name="foo",
+            root_path="/tmp",
+            encryption=BI.EncTuple(etype, eopt),
+        )
+        arglist = ["borg", "init"]
+        arglist.extend(enc_arg_map[etype])
+        arglist.append("/tmp/foo")
+        mock_run.assert_called_with(
+            arglist,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        mock_run.reset_mock()
