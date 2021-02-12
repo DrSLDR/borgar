@@ -30,3 +30,19 @@ def test_exists(mock_run: MagicMock):
     mock_run.side_effect = FileNotFoundError("Je suis mock")
     assert not BI.exists()
     mock_run.assert_called()
+
+
+@patch("subprocess.run")
+def test_init(mock_run: MagicMock):
+    # Test a good run
+    mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
+    assert BI.init(
+        name="foo",
+        root_path="/tmp",
+        encryption=BI.EncTuple(BI.EncryptionType.NONE, None),
+    )
+    mock_run.assert_called_with(
+        ["borg", "init", "--encryption", "none", "/tmp/foo"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
