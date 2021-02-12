@@ -83,3 +83,23 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
             stderr=subprocess.DEVNULL,
         )
         mock_run.reset_mock()
+
+
+@patch("subprocess.run")
+def test_init_bad_enc(mock_run: MagicMock, init_etypes_opts_args):
+    # Scaffold some constants we're gonna need
+    etypes, eopts, enc_arg_map = init_etypes_opts_args
+
+    # Test all the bad runs, but make sure to skip the good ones
+    goodlist = list(zip(etypes, eopts))
+    for etype, eopt in itertools.product(etypes, eopts):
+        if (etype, eopt) in goodlist:
+            continue
+        mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=1)
+        assert not BI.init(
+            name="foo",
+            root_path="/tmp",
+            encryption=BI.EncTuple(etype, eopt),
+        )
+        mock_run.assert_not_called()
+        mock_run.reset_mock()
