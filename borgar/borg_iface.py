@@ -109,7 +109,7 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
     if passwdflag:
         with tempfile.NamedTemporaryFile() as ntf:
             ntf.write(encryption.opt.encode("utf8"))
-            env_dict = {"BORG_PASSPHRASE_FD": ntf.name.encode("utf8")}
+            env_dict = {"BORG_PASSPHRASE_FD": ntf.name}
             subprocess.run(
                 base_args + enc_args + [repopath],
                 stdout=subprocess.PIPE,
