@@ -76,7 +76,7 @@ def exists() -> bool:
         return False
 
 
-def init(name: str, root_path: str, encryption: EncTuple) -> bool:
+def init(name: str, root_path: str, encryption: EncTuple) -> None:
     """Inits (creates) a borg repo
 
     Args:
@@ -84,8 +84,16 @@ def init(name: str, root_path: str, encryption: EncTuple) -> bool:
         root_path (str): path the repo will be created in
         encryption (EncTuple): Encryption tuple defining how the repo will be encrypted
 
-    Returns:
-        bool: True if the repo was successfully created. False otherwise.
+    Throws:
+        BorgMalformedEncryptionException: Thrown if the passed in EncTuple is an illegal
+            combination
+        BorgGeneralException: Thrown if Borg returns an error when called
     """
+    base_args = ["borg", "init"]
+    repopath = op.join(root_path, name)
+    enc_args = []
 
-    return False
+    subprocess.run(
+        base_args + enc_args + [repopath], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+

@@ -69,7 +69,7 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
     # Test all the good runs
     for etype, eopt in zip(etypes, eopts):
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        assert BI.init(
+        BI.init(
             name="foo",
             root_path="/tmp",
             encryption=BI.EncTuple(etype, eopt),
@@ -79,8 +79,8 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
         arglist.append("/tmp/foo")
         mock_run.assert_called_with(
             arglist,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
         mock_run.reset_mock()
 
@@ -96,11 +96,12 @@ def test_init_bad_enc(mock_run: MagicMock, init_etypes_opts_args):
         if (etype, eopt) in goodlist:
             continue
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=1)
-        assert not BI.init(
-            name="foo",
-            root_path="/tmp",
-            encryption=BI.EncTuple(etype, eopt),
-        )
+        with pytest.raises(BI.BorgMalformedEncryptionException):
+            BI.init(
+                name="foo",
+                root_path="/tmp",
+                encryption=BI.EncTuple(etype, eopt),
+            )
         mock_run.assert_not_called()
         mock_run.reset_mock()
 
