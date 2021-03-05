@@ -103,3 +103,32 @@ def test_init_bad_enc(mock_run: MagicMock, init_etypes_opts_args):
         )
         mock_run.assert_not_called()
         mock_run.reset_mock()
+
+# This one requires some thought. I should probably get Hypothesis in on this,
+# to somehow ensure all valid strings are good, for both name and root path.
+# More on that later.
+
+# @patch("subprocess.run")
+# def test_init_bad_misc(mock_run: MagicMock, init_etypes_opts_args):
+#     etype = BI.EncryptionType.NONE
+
+#     # Test giving None as a name
+#     goodlist = list(zip(etypes, eopts))
+#     for etype, eopt in itertools.product(etypes, eopts):
+#         if (etype, eopt) in goodlist:
+#             continue
+#         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=1)
+#         assert not BI.init(
+#             name="foo",
+#             root_path="/tmp",
+#             encryption=BI.EncTuple(etype, eopt),
+#         )
+#         arglist = ["borg", "init"]
+#         arglist.extend(enc_arg_map[etype])
+#         arglist.append("/tmp/foo")
+#         mock_run.assert_called_with(
+#             arglist,
+#             stdout=subprocess.DEVNULL,
+#             stderr=subprocess.DEVNULL,
+#         )
+#         mock_run.reset_mock()
