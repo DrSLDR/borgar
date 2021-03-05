@@ -74,6 +74,7 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
         )
 
         def trap_password(arglist, **kwargs):
+            global password_trap
             f = kwargs["env"]["BORG_PASSPHRASE_FD"]
             with open(f, "rt") as fh:
                 password_trap = fh.read()
@@ -89,12 +90,12 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
         arglist = ["borg", "init"]
         arglist.extend(enc_arg_map[etype])
         arglist.append("/tmp/foo")
-        mock_run.assert_called_with(
-            arglist,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        assert arglist == mock_run.call_args.args[0]
+        assert ("stdout", subprocess.PIPE) in mock_run.call_args.kwargs.items()
+        assert ("stderr", subprocess.PIPE) in mock_run.call_args.kwargs.items()
         if passwdflag:
+            assert "env" in mock_run.call_args.kwargs.keys()
+            assert "BORG_PASSPHRASE_FD" in mock_run.call_args.kwargs["env"]
             assert password_trap == eopt
         mock_run.reset_mock()
 
