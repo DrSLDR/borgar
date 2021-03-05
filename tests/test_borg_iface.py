@@ -104,15 +104,21 @@ def test_init_bad_enc(mock_run: MagicMock, init_etypes_opts_args):
         mock_run.assert_not_called()
         mock_run.reset_mock()
 
-# This one requires some thought. I should probably get Hypothesis in on this,
-# to somehow ensure all valid strings are good, for both name and root path.
-# More on that later.
+# We will not be testing for valid root path or repo name. We will pass any such
+# errors on down to borg. If it fails, we pass that error up. If Borg doesn't
+# fail, then we're fine. Theoretically.
+
+# If we wanted to be thorough, we could do type testing, but this is Python. If
+# a number quacks like a string, we'll let it be.
 
 # @patch("subprocess.run")
 # def test_init_bad_misc(mock_run: MagicMock, init_etypes_opts_args):
 #     etype = BI.EncryptionType.NONE
+#     etup = BI.EncTuple(etype, None)
 
 #     # Test giving None as a name
+#     mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=2)
+
 #     goodlist = list(zip(etypes, eopts))
 #     for etype, eopt in itertools.product(etypes, eopts):
 #         if (etype, eopt) in goodlist:
