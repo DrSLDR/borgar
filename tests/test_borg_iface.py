@@ -10,6 +10,7 @@ from unittest.mock import patch, MagicMock
 import itertools
 import pytest
 import subprocess
+import tempfile
 
 
 @patch("subprocess.run")
@@ -68,16 +69,18 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
 
     # Test all the good runs
     for etype, eopt in zip(etypes, eopts):
-        password_trap = None
         passwdflag = (
             etype is BI.EncryptionType.REPOKEY or etype is BI.EncryptionType.REPOKEY_B2
         )
 
+        if passwdflag:
+            passwdstore = tempfile.TemporaryFile()
+
         def trap_password(arglist, **kwargs):
-            global password_trap
             f = kwargs["env"]["BORG_PASSPHRASE_FD"]
-            with open(f, "rt") as fh:
-                password_trap = fh.read()
+            with open(f, "rb") as fh:
+                passwd = fh.read()
+                passwdstore.write(passwd)
 
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
         if passwdflag:
@@ -96,8 +99,11 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
         if passwdflag:
             assert "env" in mock_run.call_args.kwargs.keys()
             assert "BORG_PASSPHRASE_FD" in mock_run.call_args.kwargs["env"]
-            assert password_trap == eopt
-        mock_run.reset_mock()
+            passwdstore.seek(0)
+            trapped_passwd = passwdstore.read().decode("utf8")
+            passwdstore.close()
+            assert trapped_passwd == eopt
+        mock_run.reset_mock(side_effect=True)
 
 
 @patch("subprocess.run")
