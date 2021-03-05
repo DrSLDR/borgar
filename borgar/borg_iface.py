@@ -94,7 +94,7 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
         EncryptionType.REPOKEY: "repokey",
         EncryptionType.REPOKEY_B2: "repokey-blake2",
         EncryptionType.KEYFILE: "keyfile",
-        EncryptionType.KEYFILE_B2: "keyfile-blake2"
+        EncryptionType.KEYFILE_B2: "keyfile-blake2",
     }
 
     base_args = ["borg", "init"]
@@ -102,6 +102,7 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
     enc_args = ["--encryption={}".format(ENC_ARG_FLAGS[encryption.enc])]
 
     subprocess.run(
-        base_args + enc_args + [repopath], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        base_args + enc_args + [repopath],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
-
