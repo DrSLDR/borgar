@@ -104,6 +104,7 @@ def test_init_bad_enc(mock_run: MagicMock, init_etypes_opts_args):
         mock_run.assert_not_called()
         mock_run.reset_mock()
 
+
 # We will not be testing for valid root path or repo name. We will pass any such
 # errors on down to borg. If it fails, we pass that error up. If Borg doesn't
 # fail, then we're fine. Theoretically.
