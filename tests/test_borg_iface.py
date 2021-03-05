@@ -49,13 +49,13 @@ def init_etypes_opts_args():
     eopts = [None, None, None, "bar", "/tmp/baz", "bar", "/tmp/baz"]
 
     enc_arg_map = {
-        BI.EncryptionType.NONE: ["--encryption", "none"],
-        BI.EncryptionType.AUTHENTICATED: ["--encryption", "authenticated"],
-        BI.EncryptionType.AUTHENTICATED_B2: ["--encryption", "authenticated-blake2"],
-        BI.EncryptionType.REPOKEY: ["--encryption", "repokey"],
-        BI.EncryptionType.KEYFILE: ["--encryption", "keyfile"],
-        BI.EncryptionType.REPOKEY_B2: ["--encryption", "repokey-blake2"],
-        BI.EncryptionType.KEYFILE_B2: ["--encryption", "keyfile-blake2"],
+        BI.EncryptionType.NONE: ["--encryption=none"],
+        BI.EncryptionType.AUTHENTICATED: ["--encryption=authenticated"],
+        BI.EncryptionType.AUTHENTICATED_B2: ["--encryption=authenticated-blake2"],
+        BI.EncryptionType.REPOKEY: ["--encryption=repokey"],
+        BI.EncryptionType.KEYFILE: ["--encryption=keyfile"],
+        BI.EncryptionType.REPOKEY_B2: ["--encryption=repokey-blake2"],
+        BI.EncryptionType.KEYFILE_B2: ["--encryption=keyfile-blake2"],
     }
 
     return (etypes, eopts, enc_arg_map)

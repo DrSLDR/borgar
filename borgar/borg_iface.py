@@ -101,7 +101,7 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
 
     base_args = ["borg", "init"]
     repopath = op.join(root_path, name)
-    enc_args = ["--encryption", ENC_ARG_FLAGS[encryption.enc]]
+    enc_args = ["--encryption={}".format(ENC_ARG_FLAGS[encryption.enc])]
 
     subprocess.run(
         base_args + enc_args + [repopath], stdout=subprocess.PIPE, stderr=subprocess.PIPE
