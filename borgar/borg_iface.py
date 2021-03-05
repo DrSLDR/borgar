@@ -89,9 +89,19 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
             combination
         BorgGeneralException: Thrown if Borg returns an error when called
     """
+    ENC_ARG_FLAGS = {
+        EncryptionType.NONE: "none",
+        EncryptionType.AUTHENTICATED: "authenticated",
+        EncryptionType.AUTHENTICATED_B2: "authenticated-blake2",
+        EncryptionType.REPOKEY: "repokey",
+        EncryptionType.REPOKEY_B2: "repokey-blake2",
+        EncryptionType.KEYFILE: "keyfile",
+        EncryptionType.KEYFILE_B2: "keyfile-blake2"
+    }
+
     base_args = ["borg", "init"]
     repopath = op.join(root_path, name)
-    enc_args = []
+    enc_args = ["--encryption", ENC_ARG_FLAGS[encryption.enc]]
 
     subprocess.run(
         base_args + enc_args + [repopath], stdout=subprocess.PIPE, stderr=subprocess.PIPE
