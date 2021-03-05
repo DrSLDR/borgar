@@ -11,6 +11,10 @@ from typing import Optional
 import subprocess
 
 
+class BorgMalformedEncryptionException(Exception):
+    """Exception type for bad encryption tuples"""
+
+
 class EncryptionType(Enum):
     """Enumeration of encryption types accepted by Borg"""
 
