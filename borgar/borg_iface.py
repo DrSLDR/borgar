@@ -6,8 +6,8 @@ invoking) borg. We hide all that here for modularity and ease of use.
 
 from collections import namedtuple
 from enum import Enum, auto
-from os import name, path as op
-from typing import Optional
+from os import path as op
+import tempfile
 import subprocess
 
 
@@ -101,8 +101,24 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
     repopath = op.join(root_path, name)
     enc_args = ["--encryption={}".format(ENC_ARG_FLAGS[encryption.enc])]
 
-    subprocess.run(
-        base_args + enc_args + [repopath],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+    passwdflag = (
+        encryption.enc is EncryptionType.REPOKEY
+        or encryption.enc is EncryptionType.REPOKEY_B2
     )
+
+    if passwdflag:
+        with tempfile.NamedTemporaryFile() as ntf:
+            ntf.write(encryption.opt.encode("utf8"))
+            env_dict = {"BORG_PASSPHRASE_FD": ntf.name.encode("utf8")}
+            subprocess.run(
+                base_args + enc_args + [repopath],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=env_dict,
+            )
+    else:
+        subprocess.run(
+            base_args + enc_args + [repopath],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
