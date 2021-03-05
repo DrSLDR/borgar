@@ -69,6 +69,9 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
     # Test all the good runs
     for etype, eopt in zip(etypes, eopts):
         password_trap = None
+        passwdflag = (
+            etype is BI.EncryptionType.REPOKEY or etype is BI.EncryptionType.REPOKEY_B2
+        )
 
         def trap_password(arglist, **kwargs):
             f = kwargs["env"]["BORG_PASSPHRASE_FD"]
@@ -76,7 +79,7 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
                 password_trap = fh.read()
 
         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
-        if etype is BI.EncryptionType.REPOKEY or etype is BI.EncryptionType.REPOKEY_B2:
+        if passwdflag:
             mock_run.side_effect = trap_password
         BI.init(
             name="foo",
@@ -91,7 +94,7 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        if etype is BI.EncryptionType.REPOKEY or etype is BI.EncryptionType.REPOKEY_B2:
+        if passwdflag:
             assert password_trap == eopt
         mock_run.reset_mock()
 
