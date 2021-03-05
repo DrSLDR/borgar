@@ -15,6 +15,10 @@ class BorgMalformedEncryptionException(Exception):
     """Exception type for bad encryption tuples"""
 
 
+class BorgGeneralException(Exception):
+    """Exception class for any Borg error that doesn't have a specific exception"""
+
+
 class EncryptionType(Enum):
     """Enumeration of encryption types accepted by Borg"""
 
