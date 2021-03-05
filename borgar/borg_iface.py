@@ -34,14 +34,12 @@ class EncryptionType(Enum):
     """SHA-256 Authenticated and AES-CTR-256 Encrypted. A passphrase (str) is
     needed as opt."""
     KEYFILE = auto()
-    """SHA-256 Authenticated and AES-CTR-256 Encrypted. A keyfile path (str) is
-    optional as opt."""
+    """SHA-256 Authenticated and AES-CTR-256 Encrypted. No opt (None) needed."""
     REPOKEY_B2 = auto()
     """BLAKE2b-256 Authenticated and AES-CTR-256 Encrypted. A passphrase (str)
     is needed as opt."""
     KEYFILE_B2 = auto()
-    """BLAKE2b-256 Authenticated and AES-CTR-256 Encrypted. A keyfile path (str)
-    is optional as opt."""
+    """BLAKE2b-256 Authenticated and AES-CTR-256 Encrypted. No opt (None) needed."""
 
 
 _EncTuple_ = namedtuple("EncryptionTuple", ["enc", "opt"])

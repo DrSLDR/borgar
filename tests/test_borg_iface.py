@@ -46,7 +46,7 @@ def init_etypes_opts_args():
         BI.EncryptionType.KEYFILE_B2,
     ]
 
-    eopts = [None, None, None, "bar", "/tmp/baz", "bar", "/tmp/baz"]
+    eopts = [None, None, None, "bar", None, "bar", None]
 
     enc_arg_map = {
         BI.EncryptionType.NONE: ["--encryption=none"],
