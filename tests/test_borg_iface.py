@@ -111,6 +111,9 @@ def test_init_bad_enc(mock_run: MagicMock, init_etypes_opts_args):
     # Scaffold some constants we're gonna need
     etypes, eopts, enc_arg_map = init_etypes_opts_args
 
+    # Extend the eopts with some bad types
+    eopts.extend([[], 0, -1, ("a", "b"), (), "foo".encode("utf8")])
+
     # Test all the bad runs, but make sure to skip the good ones
     goodlist = list(zip(etypes, eopts))
     for etype, eopt in itertools.product(etypes, eopts):
