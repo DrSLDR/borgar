@@ -157,8 +157,8 @@ def test_init_bad_stems(mock_run: MagicMock, init_etypes_opts_args):
 
     mock_run.assert_called_once_with(
         ["borg", "init", enc_arg_map[etype][0], ""],
-        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     mock_run.reset_mock()
 
