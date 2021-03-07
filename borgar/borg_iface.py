@@ -129,20 +129,28 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
             )
         )
 
+    cp = None
     if passwdflag:
         with tempfile.NamedTemporaryFile() as ntf:
             ntf.write(encryption.opt.encode("utf8"))
             ntf.flush()
             env_dict = {"BORG_PASSPHRASE_FD": ntf.name}
-            subprocess.run(
+            cp = subprocess.run(
                 base_args + enc_args + [repopath],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 env=env_dict,
             )
     else:
-        subprocess.run(
+        cp = subprocess.run(
             base_args + enc_args + [repopath],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+        )
+
+    if cp.returncode == 2:
+        raise BorgGeneralException(
+            "Borg errored with the following messages:\nSTDOUT: {}\n\nSTDERR:{}".format(
+                cp.stdout, cp.stderr
+            )
         )
