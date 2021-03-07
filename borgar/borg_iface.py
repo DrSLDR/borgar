@@ -1,7 +1,7 @@
 """Borg interface module
 
-The borgar-internal interface for communicating with (that is, mostly
-invoking) borg. We hide all that here for modularity and ease of use.
+The borgar-internal interface for communicating with (that is, mostly invoking) borg. We
+hide all that here for modularity and ease of use.
 """
 
 from collections import namedtuple
@@ -77,15 +77,22 @@ def exists() -> bool:
 def init(name: str, root_path: str, encryption: EncTuple) -> None:
     """Inits (creates) a borg repo
 
+    This function verifies that the EncTuple is correct, but does no other verification.
+    So long as the path stems root_path and name are accepted by os.path, they will be
+    handed to borg. If it fails, a BorgGeneralException will be raised.
+
+    This function does not provide a return value.
+
     Args:
         name (str): name of the new repo
         root_path (str): path the repo will be created in
         encryption (EncTuple): Encryption tuple defining how the repo will be encrypted
 
-    Throws:
-        BorgMalformedEncryptionException: Thrown if the passed in EncTuple is an illegal
+    Raises:
+        BorgMalformedEncryptionException: Raised if the passed in EncTuple is an illegal
             combination
-        BorgGeneralException: Thrown if Borg returns an error when called
+        BorgGeneralException: Raised if Borg returns an error when called
+        OSError: Raised if os.path.join rejects the path stems name and root_path
     """
     ENC_ARG_FLAGS = {
         EncryptionType.NONE: "none",
