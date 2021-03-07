@@ -106,6 +106,16 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
         or encryption.enc is EncryptionType.REPOKEY_B2
     )
 
+    # Early exit: Check if the encryption tuple is legal
+    if (passwdflag and encryption.opt is None) or (
+        not passwdflag and encryption.opt is not None
+    ):
+        raise BorgMalformedEncryptionException(
+            "Opt {!r} is not allowed for encryption type {!r}".format(
+                encryption.opt, encryption.enc
+            )
+        )
+
     if passwdflag:
         with tempfile.NamedTemporaryFile() as ntf:
             ntf.write(encryption.opt.encode("utf8"))
