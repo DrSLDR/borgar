@@ -105,8 +105,14 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
     }
 
     base_args = ["borg", "init"]
-    repopath = op.join(root_path, name)
     enc_args = ["--encryption={}".format(ENC_ARG_FLAGS[encryption.enc])]
+
+    try:
+        repopath = op.join(root_path, name)
+    except TypeError:
+        raise OSError(
+            "Could not assemble a path from stems {!r} and {!r}".format(root_path, name)
+        )
 
     passwdflag = (
         encryption.enc is EncryptionType.REPOKEY
