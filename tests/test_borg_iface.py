@@ -137,30 +137,31 @@ def test_init_bad_enc(mock_run: MagicMock, init_etypes_opts_args):
 # If we wanted to be thorough, we could do type testing, but this is Python. If
 # a number quacks like a string, we'll let it be.
 
-# @patch("subprocess.run")
-# def test_init_bad_misc(mock_run: MagicMock, init_etypes_opts_args):
-#     etype = BI.EncryptionType.NONE
-#     etup = BI.EncTuple(etype, None)
 
-#     # Test giving None as a name
-#     mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=2)
+@patch("subprocess.run")
+def test_init_bad_stems(mock_run: MagicMock, init_etypes_opts_args):
+    _, _, enc_arg_map = init_etypes_opts_args
 
-#     goodlist = list(zip(etypes, eopts))
-#     for etype, eopt in itertools.product(etypes, eopts):
-#         if (etype, eopt) in goodlist:
-#             continue
-#         mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=1)
-#         assert not BI.init(
-#             name="foo",
-#             root_path="/tmp",
-#             encryption=BI.EncTuple(etype, eopt),
-#         )
-#         arglist = ["borg", "init"]
-#         arglist.extend(enc_arg_map[etype])
-#         arglist.append("/tmp/foo")
-#         mock_run.assert_called_with(
-#             arglist,
-#             stdout=subprocess.DEVNULL,
-#             stderr=subprocess.DEVNULL,
-#         )
-#         mock_run.reset_mock()
+    etype = BI.EncryptionType.NONE
+    etup = BI.EncTuple(etype, None)
+
+    # Test empty strings as stems
+    mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=2)
+
+    with pytest.raises(BI.BorgGeneralException):
+        BI.init("", "", etup)
+
+    mock_run.assert_called_once_with(
+        ["borg", "init", enc_arg_map[etype][0], ""],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+    )
+    mock_run.reset_mock()
+
+    # Test illegal types as stems
+    stem = [2, 0, -1, (), None, {}]
+
+    for root, name in itertools.product(stem, stem):
+        with pytest.raises(IOError):
+            BI.init(name, root, etup)
+        mock_run.assert_not_called()
