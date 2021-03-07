@@ -76,15 +76,19 @@ def test_init_good(mock_run: MagicMock, init_etypes_opts_args):
         if passwdflag:
             passwdstore = tempfile.TemporaryFile()
 
+        cp = subprocess.CompletedProcess(args=[], returncode=0)
+
         def trap_password(arglist, **kwargs):
             f = kwargs["env"]["BORG_PASSPHRASE_FD"]
             with open(f, "rb") as fh:
                 passwd = fh.read()
                 passwdstore.write(passwd)
+            return cp
 
-        mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
         if passwdflag:
             mock_run.side_effect = trap_password
+        else:
+            mock_run.return_value = cp
         BI.init(
             name="foo",
             root_path="/tmp",
