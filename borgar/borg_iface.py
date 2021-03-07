@@ -107,7 +107,7 @@ def init(name: str, root_path: str, encryption: EncTuple) -> None:
     )
 
     # Early exit: Check if the encryption tuple is legal
-    if (passwdflag and encryption.opt is None) or (
+    if (passwdflag and type(encryption.opt) is not str) or (
         not passwdflag and encryption.opt is not None
     ):
         raise BorgMalformedEncryptionException(
